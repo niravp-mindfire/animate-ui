@@ -1,3 +1,35 @@
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+var __objRest = (source, exclude) => {
+  var target = {};
+  for (var prop in source)
+    if (__hasOwnProp.call(source, prop) && exclude.indexOf(prop) < 0)
+      target[prop] = source[prop];
+  if (source != null && __getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(source)) {
+      if (exclude.indexOf(prop) < 0 && __propIsEnum.call(source, prop))
+        target[prop] = source[prop];
+    }
+  return target;
+};
+
 // src/components/fade/index.tsx
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -198,7 +230,73 @@ var Slide = ({
     }
   ) });
 };
+
+// src/components/Button/index.tsx
+import { Slot } from "@radix-ui/react-slot";
+import { motion as motion3 } from "framer-motion";
+import clsx from "clsx";
+import { jsx as jsx3 } from "react/jsx-runtime";
+var buttonVariants = {
+  fade: {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.4, ease: "easeOut" } }
+  },
+  scale: {
+    hidden: { scale: 0.8 },
+    visible: { scale: 1, transition: { duration: 0.3, ease: "easeInOut" } }
+  },
+  bounce: {
+    hidden: { y: -5 },
+    visible: { y: 0, transition: { type: "spring", stiffness: 100 } }
+  }
+};
+var Button = (_a) => {
+  var _b = _a, {
+    asChild = false,
+    variant = "primary",
+    size = "medium",
+    isLoading = false,
+    animation = "fade",
+    className,
+    children
+  } = _b, props = __objRest(_b, [
+    "asChild",
+    "variant",
+    "size",
+    "isLoading",
+    "animation",
+    "className",
+    "children"
+  ]);
+  const Component = asChild ? Slot : "button";
+  return /* @__PURE__ */ jsx3(
+    motion3.div,
+    {
+      initial: "hidden",
+      animate: "visible",
+      variants: buttonVariants[animation],
+      children: /* @__PURE__ */ jsx3(
+        Component,
+        __spreadProps(__spreadValues({
+          className: clsx(
+            "rounded-lg font-medium focus:outline-none focus:ring-2",
+            variant === "primary" && "bg-blue-600 text-white hover:bg-blue-700",
+            variant === "secondary" && "bg-gray-600 text-white hover:bg-gray-700",
+            variant === "outline" && "border border-gray-400 text-gray-800 hover:bg-gray-100",
+            size === "small" && "px-2 py-1 text-sm",
+            size === "medium" && "px-4 py-2 text-base",
+            size === "large" && "px-6 py-3 text-lg",
+            className
+          )
+        }, props), {
+          children: isLoading ? "Loading..." : children
+        })
+      )
+    }
+  );
+};
 export {
+  Button,
   Fade,
   Slide
 };
