@@ -1,64 +1,80 @@
-import React from "react";
-import { Slot } from "@radix-ui/react-slot";
-import { motion, Variants } from "framer-motion";
-import clsx from "clsx";
+import React, { ReactNode } from "react";
+import { motion } from "framer-motion";
+import { useAnimation } from "../../hooks/use-animation"; // Assuming you have a custom hook for animation state
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  asChild?: boolean;
-  variant?: "primary" | "secondary" | "outline";
-  size?: "small" | "medium" | "large";
-  isLoading?: boolean;
-  animation?: "fade" | "scale" | "bounce";
+interface ButtonProps {
+  children: ReactNode;
+  variant?: "primary" | "secondary" | "danger" | "link" | "icon" | "text";
+  disabled?: boolean;
+  href?: string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  icon?: ReactNode;
+  className?: string;
 }
 
-const buttonVariants: Record<string, Variants> = {
-  fade: {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.4, ease: "easeOut" } }
-  },
-  scale: {
-    hidden: { scale: 0.8 },
-    visible: { scale: 1, transition: { duration: 0.3, ease: "easeInOut" } }
-  },
-  bounce: {
-    hidden: { y: -5 },
-    visible: { y: 0, transition: { type: "spring", stiffness: 100 } }
-  }
+const buttonStyles: Record<string, string> = {
+  primary: "bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-400",
+  secondary: "bg-gray-600 text-white hover:bg-gray-700 focus:ring-2 focus:ring-gray-400",
+  danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-400",
+  link: "text-blue-500 underline hover:text-blue-700",
+  icon: "p-2 rounded-full bg-gray-200 hover:bg-gray-300",
+  text: "bg-transparent text-gray-600 hover:text-gray-900",
 };
 
-export const Button: React.FC<ButtonProps> = ({
-  asChild = false,
+const Button: React.FC<ButtonProps> = ({
   variant = "primary",
-  size = "medium",
-  isLoading = false,
-  animation = "fade",
-  className,
+  disabled = false,
+  href,
   children,
+  onClick,
+  icon,
+  className,
   ...props
 }) => {
-  const Component = asChild ? Slot : "button";
+  const { isAnimating } = useAnimation({
+    disabled,
+  });
 
-  return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={buttonVariants[animation]}
-    >
-      <Component
-        className={clsx(
-          "rounded-lg font-medium focus:outline-none focus:ring-2",
-          variant === "primary" && "bg-blue-600 text-white hover:bg-blue-700",
-          variant === "secondary" && "bg-gray-600 text-white hover:bg-gray-700",
-          variant === "outline" && "border border-gray-400 text-gray-800 hover:bg-gray-100",
-          size === "small" && "px-2 py-1 text-sm",
-          size === "medium" && "px-4 py-2 text-base",
-          size === "large" && "px-6 py-3 text-lg",
-          className
-        )}
+  const animationVariants = {
+    initial: { opacity: 0, scale: 0.95 },
+    animate: { opacity: 1, scale: 1, transition: { duration: 0.2 } },
+    exit: { opacity: 0, scale: 0.95 },
+  };
+
+  const buttonClass = `px-4 py-2 rounded transition-all duration-300 ${buttonStyles[variant]} ${className}`;
+
+  if (href) {
+    return (
+      <motion.a
+        href={href}
+        initial="initial"
+        animate={isAnimating ? "animate" : "initial"}
+        exit="exit"
+        variants={animationVariants}
+        className={buttonClass}
         {...props}
       >
-        {isLoading ? "Loading..." : children}
-      </Component>
-    </motion.div>
+        {icon && <span className="mr-2">{icon}</span>}
+        {children}
+      </motion.a>
+    );
+  }
+
+  return (
+    <motion.button
+      onClick={onClick}
+      disabled={disabled}
+      initial="initial"
+      animate={isAnimating ? "animate" : "initial"}
+      exit="exit"
+      variants={animationVariants}
+      className={buttonClass}
+      {...props}
+    >
+      {icon && <span className="mr-2">{icon}</span>}
+      {children}
+    </motion.button>
   );
 };
+
+export default Button;

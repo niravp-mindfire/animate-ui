@@ -40,13 +40,4 @@ declare const Fade: React$1.FC<FadeProps>;
 
 declare const Slide: React$1.FC<SlideProps>;
 
-interface ButtonProps extends React$1.ButtonHTMLAttributes<HTMLButtonElement> {
-    asChild?: boolean;
-    variant?: "primary" | "secondary" | "outline";
-    size?: "small" | "medium" | "large";
-    isLoading?: boolean;
-    animation?: "fade" | "scale" | "bounce";
-}
-declare const Button: React$1.FC<ButtonProps>;
-
-export { Button, type ButtonProps, Fade, Slide };
+export { Fade, Slide };

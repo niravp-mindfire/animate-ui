@@ -1,161 +1,193 @@
 interface Component {
-    name: string;
-    content: string;
-    dependencies?: string[];
-  }
-  
-  export async function getAvailableComponents(): Promise<Component[]> {
-    // This would typically load from a registry or local templates
-    return [
-      {
-        name: 'slide',
-        content: `import { motion } from 'framer-motion';
-  import { cn } from '@/utils/cn';
-  
-  interface SlideProps {
-    children: React.ReactNode;
-    direction?: 'up' | 'down' | 'left' | 'right';
-    duration?: number;
-    className?: string;
-  }
-  
-  export const Slide = ({
-    children,
-    direction = 'up',
-    duration = 0.4,
-    className
-  }: SlideProps) => {
-    const slideVariants = {
-      initial: {
-        opacity: 0,
-        x: direction === 'left' ? 20 : direction === 'right' ? -20 : 0,
-        y: direction === 'up' ? 20 : direction === 'down' ? -20 : 0
-      },
-      animate: {
-        opacity: 1,
-        x: 0,
-        y: 0
-      },
-      exit: {
-        opacity: 0,
-        x: direction === 'left' ? -20 : direction === 'right' ? 20 : 0,
-        y: direction === 'up' ? -20 : direction === 'down' ? 20 : 0
-      }
-    };
-  
-    return (
-      <motion.div
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        variants={slideVariants}
-        transition={{ duration }}
-        className={cn('', className)}
-      >
-        {children}
-      </motion.div>
-    );
-  };`,
-        dependencies: ['framer-motion']
-      },
-      {
-        name: 'fade',
-        content: `import { motion } from 'framer-motion';
-  import { cn } from '@/utils/cn';
-  
-  interface FadeProps {
-    children: React.ReactNode;
-    duration?: number;
-    className?: string;
-  }
-  
-  export const Fade = ({
-    children,
-    duration = 0.4,
-    className
-  }: FadeProps) => {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration }}
-        className={cn('', className)}
-      >
-        {children}
-      </motion.div>
-    );
-  };`,
-        dependencies: ['framer-motion']
-      },
-      {
-        name: "Button",
-        content: `import React from "react";
-  import { Slot } from "@radix-ui/react-slot";
-  import { motion, Variants } from "framer-motion";
-  import clsx from "clsx";
-  
-  export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    asChild?: boolean;
-    variant?: "primary" | "secondary" | "outline";
-    size?: "small" | "medium" | "large";
-    isLoading?: boolean;
-    animation?: "fade" | "scale" | "bounce";
-  }
-  
-  const buttonVariants: Record<string, Variants> = {
-    fade: {
-      hidden: { opacity: 0 },
-      visible: { opacity: 1, transition: { duration: 0.4, ease: "easeOut" } }
+  name: string;
+  content: string;
+  dependencies?: string[];
+}
+
+export async function getAvailableComponents(): Promise<Component[]> {
+  return [
+    {
+      name: 'slide',
+      content: `import { motion } from 'framer-motion';
+import { cn } from '@/utils/cn';
+
+interface SlideProps {
+  children: React.ReactNode;
+  direction?: 'up' | 'down' | 'left' | 'right';
+  duration?: number;
+  className?: string;
+}
+
+export const Slide = ({
+  children,
+  direction = 'up',
+  duration = 0.4,
+  className
+}: SlideProps) => {
+  const slideVariants = {
+    initial: {
+      opacity: 0,
+      x: direction === 'left' ? 20 : direction === 'right' ? -20 : 0,
+      y: direction === 'up' ? 20 : direction === 'down' ? -20 : 0
     },
-    scale: {
-      hidden: { scale: 0.8 },
-      visible: { scale: 1, transition: { duration: 0.3, ease: "easeInOut" } }
+    animate: {
+      opacity: 1,
+      x: 0,
+      y: 0
     },
-    bounce: {
-      hidden: { y: -5 },
-      visible: { y: 0, transition: { type: "spring", stiffness: 100 } }
+    exit: {
+      opacity: 0,
+      x: direction === 'left' ? -20 : direction === 'right' ? 20 : 0,
+      y: direction === 'up' ? -20 : direction === 'down' ? 20 : 0
     }
   };
-  
-  export const Button: React.FC<ButtonProps> = ({
-    asChild = false,
-    variant = "primary",
-    size = "medium",
-    isLoading = false,
-    animation = "fade",
-    className,
-    children,
-    ...props
-  }) => {
-    const Component = asChild ? Slot : "button";
-  
+
+  return (
+    <motion.div
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={slideVariants}
+      transition={{ duration }}
+      className={cn('', className)}
+    >
+      {children}
+    </motion.div>
+  );
+};`,
+      dependencies: ['framer-motion']
+    },
+    {
+      name: 'fade',
+      content: `import { motion } from 'framer-motion';
+import { cn } from '@/utils/cn';
+
+interface FadeProps {
+  children: React.ReactNode;
+  duration?: number;
+  className?: string;
+}
+
+export const Fade = ({
+  children,
+  duration = 0.4,
+  className
+}: FadeProps) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration }}
+      className={cn('', className)}
+    >
+      {children}
+    </motion.div>
+  );
+};`,
+      dependencies: ['framer-motion']
+    },
+    {
+      name: 'Button',
+      content: `import React, { ReactNode } from 'react';
+import { motion, MotionProps } from 'framer-motion';
+import * as Tooltip from '@radix-ui/react-tooltip';
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, MotionProps {
+  variant?: 'primary' | 'secondary' | 'danger' | 'link' | 'icon' | 'text' | 'tooltip';
+  animated?: boolean;
+  icon?: ReactNode;
+  tooltipText?: string;
+  href?: string;
+  children?: ReactNode;
+}
+
+const buttonStyles: Record<string, string> = {
+  primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-400',
+  secondary: 'bg-gray-600 text-white hover:bg-gray-700 focus:ring-2 focus:ring-gray-400',
+  danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-400',
+  link: 'text-blue-500 underline hover:text-blue-700',
+  icon: 'p-2 rounded-full bg-gray-200 hover:bg-gray-300',
+  text: 'bg-transparent text-gray-600 hover:text-gray-900',
+  tooltip: 'p-2 rounded-full bg-gray-500 text-white hover:bg-gray-700'
+};
+
+const Button: React.FC<ButtonProps> = ({
+  variant = 'primary',
+  animated = true,
+  icon,
+  tooltipText,
+  href,
+  children,
+  ...props
+}) => {
+  const animationVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.2 } }
+  };
+
+  const buttonClass = \`px-4 py-2 rounded transition-all duration-300 \${buttonStyles[variant]}\`;
+
+  if (variant === 'tooltip' && tooltipText) {
     return (
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={buttonVariants[animation]}
-      >
-        <Component
-          className={clsx(
-            "rounded-lg font-medium focus:outline-none focus:ring-2",
-            variant === "primary" && "bg-blue-600 text-white hover:bg-blue-700",
-            variant === "secondary" && "bg-gray-600 text-white hover:bg-gray-700",
-            variant === "outline" && "border border-gray-400 text-gray-800 hover:bg-gray-100",
-            size === "small" && "px-2 py-1 text-sm",
-            size === "medium" && "px-4 py-2 text-base",
-            size === "large" && "px-6 py-3 text-lg",
-            className
-          )}
-          {...props}
-        >
-          {isLoading ? "Loading..." : children}
-        </Component>
-      </motion.div>
+      <Tooltip.Provider>
+        <Tooltip.Root>
+          <Tooltip.Trigger asChild>
+            <motion.button
+              initial={animated ? 'hidden' : undefined}
+              animate={animated ? 'visible' : undefined}
+              variants={animationVariants}
+              className={buttonClass}
+              {...props}
+            >
+              {icon || children}
+            </motion.button>
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content
+              side="top"
+              className="bg-black text-white text-sm px-3 py-1 rounded shadow-md"
+            >
+              {tooltipText}
+              <Tooltip.Arrow className="fill-black" />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>
     );
-  };`,
-        dependencies: ["framer-motion", "@radix-ui/react-slot", "clsx"],
-      },
-    ];
   }
-  
+
+  if (variant === 'link' && href) {
+    return (
+      <motion.a
+        initial={animated ? 'hidden' : undefined}
+        animate={animated ? 'visible' : undefined}
+        variants={animationVariants}
+        href={href}
+        className="underline text-blue-500 hover:text-blue-700"
+        {...props}
+      >
+        {children}
+      </motion.a>
+    );
+  }
+
+  return (
+    <motion.button
+      initial={animated ? 'hidden' : undefined}
+      animate={animated ? 'visible' : undefined}
+      variants={animationVariants}
+      className={buttonClass}
+      {...props}
+    >
+      {icon && <span className="mr-2">{icon}</span>}
+      {children}
+    </motion.button>
+  );
+};
+
+export default Button;`,
+      dependencies: ['framer-motion', '@radix-ui/react-tooltip']
+    }
+  ];
+}
